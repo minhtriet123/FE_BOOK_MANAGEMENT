@@ -35,7 +35,7 @@ export default function AddBook() {
     axios
       .post(`http://localhost:5000/api/books/create-book`, data, config)
       .then((respone) => {
-        history.push("/books");
+        history.push("/");
       })
       .catch((error) => setError(error.response.data.message));
   };

@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { getAccessToken, removeUserSession } from "../Utils/Common";
 
@@ -15,7 +15,10 @@ export default function ListBook() {
   const handleLogout = () => {
     removeUserSession();
   };
-  const loadBook = () => {
+  useEffect(() => {
+    fectBooks();
+  }, []);
+  async function fectBooks() {
     axios
       .get(`http://localhost:5000/api/books`, config)
       .then((respone) => {
@@ -25,7 +28,7 @@ export default function ListBook() {
       .catch((error) => {
         console.error(error);
       });
-  };
+  }
   const setActiveBook = (book, index) => {
     setCurrentBook(book);
     setCurrentIndex(index);
@@ -33,12 +36,10 @@ export default function ListBook() {
   const deleteItem = (id) => {
     axios
       .delete(`http://localhost:5000/api/books/${id}`, config)
-      .then((respone) => loadBook())
+      .then((respone) => fectBooks())
       .catch((error) => console.log(error));
   };
-  const handleAddBook = () => {
-
-  }
+  const handleAddBook = () => {};
   return (
     <div className="container">
       <div className="d-flex justify-content-around p-2 bg-light">
@@ -83,18 +84,21 @@ export default function ListBook() {
       </div>
       <br />
       <div class="d-flex justify-content-around">
-      <Link to="/add-book" className="btn btn-success" onClick={handleAddBook}>Add book</Link>
-      <Link to="/" onClick={handleLogout} className="btn btn-danger">
-        Log-out
-      </Link>
+        <Link
+          to="/add-book"
+          className="btn btn-success"
+          onClick={handleAddBook}
+        >
+          Add book
+        </Link>
+        <Link to="/" onClick={handleLogout} className="btn btn-danger">
+          Log-out
+        </Link>
       </div>
-    
+
       <br />
       <div class="d-flex p-2">
         <p className="h1">List Books: </p>
-        <button type="button" className="btn btn-light" onClick={loadBook}>
-          Render Book
-        </button>
       </div>
       <br />
 
@@ -132,14 +136,26 @@ export default function ListBook() {
                         </p>{" "}
                       </div>
                       <div className="p-2">
-                        <Link to={"/books/" + currentBook.id}  className="badge badge-warning">Edit</Link>
+                        <Link
+                          to={"/books/" + currentBook.id}
+                          className="badge badge-warning"
+                        >
+                          Edit
+                        </Link>
                       </div>
                       <div className="p-2">
                         {" "}
                         <button
                           type="button"
                           className="btn btn-warning badge badge-warning "
-                          onClick={() => { if (window.confirm('Are you sure you wish to delete this item?')) deleteItem(currentBook.id) } }
+                          onClick={() => {
+                            if (
+                              window.confirm(
+                                "Are you sure you wish to delete this item?"
+                              )
+                            )
+                              deleteItem(currentBook.id);
+                          }}
                         >
                           Delete
                         </button>

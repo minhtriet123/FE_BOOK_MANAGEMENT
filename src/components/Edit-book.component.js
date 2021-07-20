@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useHistory, useParams } from "react-router-dom";
 import { getAccessToken } from "../Utils/Common";
 import ErrorMessage from "./ErrorMessage";
@@ -25,14 +25,18 @@ export default function EditBook() {
     setCover(respone.data.cover);
   };
   let history = useHistory();
-  const loadInfo = () => {
-    axios
-      .get(`http://localhost:5000/api/books/${id}`, config)
-      .then((respone) => {
-        setAll(respone);
-      })
-      .catch((error) => setError(error.response.data.message));
-  };
+  useEffect(() => {
+    async function fectData() {
+      axios
+        .get(`http://localhost:5000/api/books/${id}`, config)
+        .then((respone) => {
+          setAll(respone);
+        })
+        .catch((error) => setError(error.response.data.message));
+    }
+    fectData();
+  }, []);
+
   let config = {
     headers: {
       Authorization: "Bearer " + getAccessToken(),
@@ -53,15 +57,13 @@ export default function EditBook() {
     axios
       .patch(`http://localhost:5000/api/books/${id}/edit`, data, config)
       .then((respone) => {
-        history.push('/');
+        history.push("/");
       })
       .catch((error) => setError(error.response.data.message));
   };
   return (
     <div>
       <div className="container">
-        <button onClick={loadInfo}> LoadInfor</button>
-        <p className="h4"> Add New Book: </p>
         <form>
           <div className="form-group">
             <label>Title</label>

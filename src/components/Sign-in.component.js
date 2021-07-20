@@ -26,7 +26,7 @@ export default function Signin() {
       .then((respone) => {
         setLoading(false);
         setUserSession(respone.data.accessToken);
-        history.push("/books");
+        history.push("/");
       })
       .catch((error) => {
         setError(error.response.data.message);

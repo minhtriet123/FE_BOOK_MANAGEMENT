@@ -94,7 +94,7 @@ export default function Signup() {
                 </form>
                 <p className="login-card-footer-text">
                   Already have an account?{" "}
-                  <Link to="/" className="text-reset">
+                  <Link to="/signin" className="text-reset">
                     Login here
                   </Link>
                 </p>

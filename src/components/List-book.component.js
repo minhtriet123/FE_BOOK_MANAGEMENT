@@ -132,7 +132,7 @@ export default function ListBook() {
                         </p>{" "}
                       </div>
                       <div className="p-2">
-                        <Link className="badge badge-warning">Edit</Link>
+                        <Link to={"/books/" + currentBook.id}  className="badge badge-warning">Edit</Link>
                       </div>
                       <div className="p-2">
                         {" "}

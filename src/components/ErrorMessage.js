@@ -31,7 +31,7 @@ export default class ErrorMessage extends Component {
  
     return (
       <ErrorContainer>
-        <ErrorHeading>Oops!</ErrorHeading>
+        <ErrorHeading></ErrorHeading>
         {Array.isArray(message) ? this.renderMessageArray(message) : <p>{message}</p>}
       </ErrorContainer>
     );

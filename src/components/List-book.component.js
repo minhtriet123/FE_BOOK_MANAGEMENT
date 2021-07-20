@@ -1,17 +1,17 @@
 import axios from "axios";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { getAccessToken, removeUserSession } from "../Utils/Common";
 
 export default function ListBook() {
+  const [books, setBooks] = useState();
+  const [currentBook, setCurrentBook] = useState(null);
+  const [currentIndex, setCurrentIndex] = useState(-1);
   let config = {
     headers: {
       Authorization: "Bearer " + getAccessToken(),
     },
   };
-  useEffect(() => {
-    loadBook();
-  });
   const handleLogout = () => {
     removeUserSession();
   };
@@ -19,12 +19,26 @@ export default function ListBook() {
     axios
       .get(`http://localhost:5000/api/books`, config)
       .then((respone) => {
-        console.log(respone);
+        const listbooks = respone.data;
+        setBooks(listbooks);
       })
       .catch((error) => {
         console.error(error);
       });
   };
+  const setActiveBook = (book, index) => {
+    setCurrentBook(book);
+    setCurrentIndex(index);
+  };
+  const deleteItem = (id) => {
+    axios
+      .delete(`http://localhost:5000/api/books/${id}`, config)
+      .then((respone) => loadBook())
+      .catch((error) => console.log(error));
+  };
+  const handleAddBook = () => {
+
+  }
   return (
     <div className="container">
       <div className="d-flex justify-content-around p-2 bg-light">
@@ -68,88 +82,118 @@ export default function ListBook() {
         </nav>
       </div>
       <br />
-      <Link to="/" onClick={handleLogout}>
-        {" "}
-        Log-out{" "}
+      <div class="d-flex justify-content-around">
+      <Link to="/add-book" className="btn btn-success" onClick={handleAddBook}>Add book</Link>
+      <Link to="/" onClick={handleLogout} className="btn btn-danger">
+        Log-out
       </Link>
+      </div>
+    
       <br />
-      <p className="h1">List Books: </p>
+      <div class="d-flex p-2">
+        <p className="h1">List Books: </p>
+        <button type="button" className="btn btn-light" onClick={loadBook}>
+          Render Book
+        </button>
+      </div>
       <br />
+
       <div className="row">
         <div className="col-4">
           <div className="list-group" id="list-tab" role="tablist">
-            <a
-              className="list-group-item list-group-item-action active"
-              data-toggle="list"
-              href="#list-home"
-              role="tab"
-              aria-controls="home"
-            >
-              Book1
-            </a>
-            <a
-              className="list-group-item list-group-item-action"
-              data-toggle="list"
-              href="#list-profile"
-              role="tab"
-              aria-controls="profile"
-            >
-              Book2
-            </a>
-            <a
-              className="list-group-item list-group-item-action"
-              data-toggle="list"
-              href="#list-messages"
-              role="tab"
-              aria-controls="messages"
-            >
-              Book3
-            </a>
-            <a
-              className="list-group-item list-group-item-action"
-              data-toggle="list"
-              href="#list-settings"
-              role="tab"
-              aria-controls="settings"
-            >
-              Book4
-            </a>
+            <ul className="list-group">
+              {books &&
+                books.map((book, index) => (
+                  <li
+                    className={
+                      "list-group-item " +
+                      (index === currentIndex ? "active" : "")
+                    }
+                    onClick={() => setActiveBook(book, index)}
+                    key={index}
+                  >
+                    {book.title}
+                  </li>
+                ))}
+            </ul>
           </div>
         </div>
         <div className="col-8">
           <div className="tab-content" id="nav-tabContent">
-            <div
-              className="tab-pane fade show active"
-              id="list-home"
-              role="tabpanel"
-              aria-labelledby="list-home-list"
-            >
-              ...
-            </div>
-            <div
-              className="tab-pane fade"
-              id="list-profile"
-              role="tabpanel"
-              aria-labelledby="list-profile-list"
-            >
-              ...
-            </div>
-            <div
-              className="tab-pane fade"
-              id="list-messages"
-              role="tabpanel"
-              aria-labelledby="list-messages-list"
-            >
-              ...
-            </div>
-            <div
-              className="tab-pane fade"
-              id="list-settings"
-              role="tabpanel"
-              aria-labelledby="list-settings-list"
-            >
-              ...
-            </div>
+            {currentBook ? (
+              <div>
+                <div className="d-flex flex-column">
+                  <div className="p-2">
+                    <div className="d-flex flex-row">
+                      <div className="p-2">
+                        <p>
+                          <strong>TITLE : </strong>
+                          {currentBook.title}
+                        </p>{" "}
+                      </div>
+                      <div className="p-2">
+                        <Link className="badge badge-warning">Edit</Link>
+                      </div>
+                      <div className="p-2">
+                        {" "}
+                        <button
+                          type="button"
+                          className="btn btn-warning badge badge-warning "
+                          onClick={() => { if (window.confirm('Are you sure you wish to delete this item?')) deleteItem(currentBook.id) } }
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="p-2">
+                    <p>
+                      <em>
+                        <ins> Description:</ins>
+                      </em>{" "}
+                      {currentBook.description}
+                    </p>
+                  </div>
+                  <div className="p-2">
+                    <div className="d-flex flex-row">
+                      <div className="p-2">
+                        <label>
+                          <em>Author:</em>
+                        </label>{" "}
+                        {currentBook.author.name}
+                      </div>
+                      <div className="p-2">
+                        <label>
+                          <em>Category:</em>
+                        </label>{" "}
+                        {currentBook.category.name}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="p-2">
+                    <div className="d-flex flex-row">
+                      <div className="p-2">
+                        <label>
+                          <em>Publish Year:</em>
+                        </label>{" "}
+                        {currentBook.publish_year}
+                      </div>
+                      <div className="p-2">
+                        <label>
+                          <em>Cover:</em>
+                        </label>{" "}
+                        {currentBook.cover}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div>
+                <br />
+                <p>Please click on a list items...</p>
+              </div>
+            )}
           </div>
         </div>
       </div>

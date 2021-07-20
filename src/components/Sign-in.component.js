@@ -25,7 +25,6 @@ export default function Signin() {
       })
       .then((respone) => {
         setLoading(false);
-        console.log(respone.data.accessToken);
         setUserSession(respone.data.accessToken);
         history.push("/books");
       })

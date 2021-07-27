@@ -4,6 +4,7 @@ import ErrorMessage from "./ErrorMessage";
 import axios from "axios";
 import { useState } from "react";
 import { useHistory } from "react-router";
+import { BASE_URL } from "../Utils/Common";
 
 export default function Signup() {
   const [email, setEmail] = useState();
@@ -17,7 +18,7 @@ export default function Signup() {
   const handleSubmit = () => {
     setError(null);
     axios
-      .post(`http://localhost:5000/api/users/signup`, {
+      .post(`${BASE_URL}/api/users/signup`, {
         email,
         password,
         confirmPassword,

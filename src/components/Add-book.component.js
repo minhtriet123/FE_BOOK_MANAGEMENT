@@ -1,7 +1,7 @@
 import axios from "axios";
 import { useState } from "react";
-import { useHistory } from "react-router-dom";
-import { getAccessToken } from "../Utils/Common";
+import { Link, useHistory } from "react-router-dom";
+import { BASE_URL, getAccessToken } from "../Utils/Common";
 import ErrorMessage from "./ErrorMessage";
 
 export default function AddBook() {
@@ -33,7 +33,7 @@ export default function AddBook() {
       cover,
     };
     axios
-      .post(`http://localhost:5000/api/books/create-book`, data, config)
+      .post(`${BASE_URL}/api/books/create-book`, data, config)
       .then((respone) => {
         history.push("/");
       })
@@ -42,6 +42,7 @@ export default function AddBook() {
   return (
     <div>
       <div className="container">
+        <Link to="/">Home</Link>
         <p className="h4"> Add New Book: </p>
         <form>
           <div className="form-group">
@@ -104,15 +105,14 @@ export default function AddBook() {
           <button type="reset" className="badge badge-danger mr-2">
             Reset
           </button>
-          
         </form>
         <button
-            type="submit"
-            className="badge badge-success"
-            onClick={handleSave}
-          >
-            Add
-          </button>
+          type="submit"
+          className="badge badge-success"
+          onClick={handleSave}
+        >
+          Add
+        </button>
         {ErrorMessage && <ErrorMessage message={errorMess} />}
       </div>
     </div>

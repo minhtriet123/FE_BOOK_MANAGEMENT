@@ -1,7 +1,7 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useHistory, useParams } from "react-router-dom";
-import { getAccessToken } from "../Utils/Common";
+import { BASE_URL, getAccessToken } from "../Utils/Common";
 import ErrorMessage from "./ErrorMessage";
 
 export default function EditBook() {
@@ -28,7 +28,7 @@ export default function EditBook() {
   useEffect(() => {
     async function fectData() {
       axios
-        .get(`http://localhost:5000/api/books/${id}`, config)
+        .get(`${BASE_URL}/api/books/${id}`, config)
         .then((respone) => {
           setAll(respone);
         })
@@ -41,6 +41,12 @@ export default function EditBook() {
     headers: {
       Authorization: "Bearer " + getAccessToken(),
     },
+  };
+  const deleteItem = (id) => {
+    axios
+      .delete(`${BASE_URL}/api/books/${id}`, config)
+      .then((respone) => history.push("/"))
+      .catch((error) => console.log(error));
   };
   const { id } = useParams();
   const handleSave = () => {
@@ -55,7 +61,7 @@ export default function EditBook() {
       cover,
     };
     axios
-      .patch(`http://localhost:5000/api/books/${id}/edit`, data, config)
+      .patch(`${BASE_URL}/api/books/${id}/edit`, data, config)
       .then((respone) => {
         history.push("/");
       })
@@ -131,11 +137,17 @@ export default function EditBook() {
               onChange={(e) => setCover(e.target.value)}
             />
           </div>
-
-          <button type="reset" className="badge badge-danger mr-2">
-            Reset
-          </button>
         </form>
+        <button
+          type="button"
+          className="badge badge-danger mr-2"
+          onClick={() => {
+            if (window.confirm("Are you sure you wish to delete this item?"))
+              deleteItem(id);
+          }}
+        >
+          Delete
+        </button>
         <button
           type="submit"
           className="badge badge-success"

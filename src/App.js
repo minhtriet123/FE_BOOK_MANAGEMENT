@@ -6,6 +6,8 @@ import Signup from "./components/Sign-up.component";
 import AddBook from "./components/Add-book.component";
 import PrivateRoute from "./Utils/PrivateRoute";
 import EditBook from "./components/Edit-book.component";
+import Profile from "./components/Profile.component";
+import AuthorCategory from "./components/Author-Category.component";
 
 function App() {
   return (
@@ -16,6 +18,8 @@ function App() {
         <Route exact path="/signin" component={Signin} />
         <PrivateRoute exact path="/add-book" component={AddBook} />
         <PrivateRoute path="/books/:id" component={EditBook} />
+        <PrivateRoute path="/author-category" component={AuthorCategory} />
+        <Route path="/profile" component={Profile} />
       </Switch>
     </div>
   );

@@ -1,45 +1,76 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { getAccessToken, removeUserSession } from "../Utils/Common";
+import { BASE_URL, getAccessToken, removeUserSession } from "../Utils/Common";
+import Pagination from "./Pagination.component";
+import queryString from "query-string";
 
 export default function ListBook() {
   const [books, setBooks] = useState();
   const [currentBook, setCurrentBook] = useState(null);
   const [currentIndex, setCurrentIndex] = useState(-1);
+  const [pagination, setPagination] = useState({
+    currentPage: 1,
+    itemCount: 10,
+    totalItems: 11,
+    totalPages: 2,
+  });
+
+  const [filters, setFilter] = useState({
+    limit: 5,
+    page: 1,
+    search: "",
+  });
   let config = {
     headers: {
       Authorization: "Bearer " + getAccessToken(),
     },
   };
+
+  const handlePageChange = (newPage) => {
+    console.log("new page:" + newPage);
+    setFilter({
+      ...filters,
+      page: newPage,
+    });
+  };
+
   const handleLogout = () => {
     removeUserSession();
   };
+
   useEffect(() => {
     fectBooks();
-  }, []);
+  }, [filters]);
+
   async function fectBooks() {
+    const paramString = queryString.stringify(filters);
     axios
-      .get(`http://localhost:5000/api/books`, config)
+      .get(`${BASE_URL}/api/books?${paramString}`, config)
       .then((respone) => {
-        const listbooks = respone.data;
+        console.log(respone.data);
+        const listbooks = respone.data.items;
+        const pag = respone.data.meta;
+        setPagination(pag);
         setBooks(listbooks);
       })
       .catch((error) => {
         console.error(error);
       });
   }
+
   const setActiveBook = (book, index) => {
     setCurrentBook(book);
     setCurrentIndex(index);
   };
+
   const deleteItem = (id) => {
     axios
-      .delete(`http://localhost:5000/api/books/${id}`, config)
+      .delete(`${BASE_URL}/api/books/${id}`, config)
       .then((respone) => fectBooks())
       .catch((error) => console.log(error));
   };
-  const handleAddBook = () => {};
+
   return (
     <div className="container">
       <div className="d-flex justify-content-around p-2 bg-light">
@@ -50,13 +81,10 @@ export default function ListBook() {
               type="search"
               placeholder="Search By Title"
               aria-label="Search"
+              onChange={(e) =>
+                setFilter({ ...filters, search: e.target.value })
+              }
             />
-            <button
-              className="btn btn-outline-success my-2 my-sm-0"
-              type="submit"
-            >
-              Search
-            </button>
           </form>
         </nav>
         <nav className="navbar navbar-light flex-row-reverse">
@@ -84,14 +112,16 @@ export default function ListBook() {
       </div>
       <br />
       <div class="d-flex justify-content-around">
-        <Link
-          to="/add-book"
-          className="btn btn-success"
-          onClick={handleAddBook}
-        >
+        <Link to="/add-book" className="btn btn-success menu">
           Add book
         </Link>
-        <Link to="/" onClick={handleLogout} className="btn btn-danger">
+        <Link to="/profile" className="btn btn-info menu">
+          Profile
+        </Link>
+        <Link to="/author-category" className="btn btn-light menu">
+          Author/Category
+        </Link>
+        <Link to="/" onClick={handleLogout} className="btn btn-danger menu">
           Log-out
         </Link>
       </div>
@@ -101,7 +131,11 @@ export default function ListBook() {
         <p className="h1">List Books: </p>
       </div>
       <br />
-
+      <Pagination
+        pagination={pagination}
+        onPageChange={handlePageChange}
+      ></Pagination>
+      <br />
       <div className="row">
         <div className="col-4">
           <div className="list-group" id="list-tab" role="tablist">

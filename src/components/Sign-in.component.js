@@ -33,6 +33,7 @@ export default function Signin() {
         setError(error.response.data.message);
       });
   };
+  
   const handleLoginGG = async () => {
     window.open(
       `${BASE_URL}/api/users/google`,

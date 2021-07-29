@@ -10,6 +10,7 @@ export default function Profile() {
   const [idUser, setIdUser] = useState();
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
+  const [avatar, setAvartar] = useState("")
   let config = {
     headers: {
       Authorization: "Bearer " + getAccessToken(),
@@ -21,6 +22,7 @@ export default function Profile() {
     setEmail(respone.data.email);
     setFirstName(respone.data.firstName);
     setLastName(respone.data.lastName);
+    setAvartar(respone.data.avatar);
   };
   useEffect(() => {
     axios
@@ -46,8 +48,10 @@ export default function Profile() {
   return (
     <div className="container">
       <Link to="/">Home</Link>
-      <br></br><br></br><br></br><br></br>
-      
+      <br></br>
+      <br></br>
+      <br></br>
+      <br></br>
       <h1>User Profile</h1>
       <div className="row gutters">
         <div className="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-12">
@@ -56,7 +60,10 @@ export default function Profile() {
               <div className="account-settings">
                 <div className="user-profile">
                   <div className="user-avatar">
-                    <span>Avatar</span>
+                    <img
+                      src={avatar? avatar : "Avatar"}
+                      alt="avatar"
+                    />
                   </div>
                   <h5 className="user-name">
                     {firstName ? firstName : "#no_name"}

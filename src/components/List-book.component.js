@@ -140,6 +140,7 @@ export default function ListBook() {
         <div className="col-4">
           <div className="list-group" id="list-tab" role="tablist">
             <ul className="list-group">
+              {!books?"Loading books...":<div></div>}
               {books &&
                 books.map((book, index) => (
                   <li

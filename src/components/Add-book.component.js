@@ -12,7 +12,6 @@ export default function AddBook() {
   const [price, setPrice] = useState();
   const [description, setDescription] = useState();
   const [cover, setCover] = useState();
-
   const [errorMess, setError] = useState(null);
 
   let history = useHistory();

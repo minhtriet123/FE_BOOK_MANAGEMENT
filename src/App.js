@@ -19,7 +19,7 @@ function App() {
         <PrivateRoute exact path="/add-book" component={AddBook} />
         <PrivateRoute path="/books/:id" component={EditBook} />
         <PrivateRoute path="/author-category" component={AuthorCategory} />
-        <Route path="/profile" component={Profile} />
+        <PrivateRoute path="/profile" component={Profile} />
       </Switch>
     </div>
   );

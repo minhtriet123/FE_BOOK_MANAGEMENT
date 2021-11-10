@@ -1,19 +1,22 @@
 export const getUser = () => {
-    const userStr = sessionStorage.getItem('user');
+    const userStr = localStorage.getItem('user');
     if (userStr) return JSON.parse(userStr);
     return null;
 }
 
 export const getAccessToken = () => {
-    return sessionStorage.getItem('accessToken');
+    return localStorage.getItem('accessToken');
 }
 
 export const setUserSession = (token) => {
-    sessionStorage.setItem('accessToken', token);
+    localStorage.setItem('accessToken', token);
     //sessionStorage.setItem('user', user);
 }
 
 export const removeUserSession = () => {
-    sessionStorage.removeItem('accessToken');
-    sessionStorage.removeItem('user');
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('user');
 }
+
+// export const BASE_URL="https://api-books-management.herokuapp.com";
+export const BASE_URL="http://localhost:5000";

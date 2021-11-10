@@ -1,37 +1,73 @@
 import login_img from "../assets/images/login.jpg";
 import "../assets/css/login.css";
+import "../assets/css/googlefacebook.css";
 import React, { useState } from "react";
 import { Link, useHistory } from "react-router-dom";
 import axios from "axios";
-import { setUserSession } from "../Utils/Common";
+import { BASE_URL, setUserSession } from "../Utils/Common";
 import ErrorMessage from "./ErrorMessage";
 
 export default function Signin() {
   const [email, setEmail] = useState();
   const [password, setPassword] = useState();
-
   const [errorMess, setError] = useState(null);
   const [loading, setLoading] = useState(false);
 
   let history = useHistory();
 
-  const handleSubmit = () => {
+  const handleLogin = async () => {
     setError(null);
     setLoading(true);
     axios
-      .post(`http://localhost:5000/api/users/signin`, {
+      .post(`${BASE_URL}/api/users/signin`, {
         email,
         password,
       })
       .then((respone) => {
         setLoading(false);
-        console.log(respone.data.accessToken);
         setUserSession(respone.data.accessToken);
-        history.push("/books");
+        history.push("/");
       })
       .catch((error) => {
+        setLoading(false);
         setError(error.response.data.message);
       });
+  };
+
+  const handleLoginGG = async () => {
+    window.open(
+      `${BASE_URL}/api/users/google`,
+      "mywindow",
+      "location=1,status=1,scrollbars=1, width=800,height=800"
+    );
+    window.addEventListener("message", (message) => {
+      if (message) {
+        setUserSession(message.data.accessToken);
+        history.push("/");
+        console.log(message);
+      } else {
+        console.log("Mess: " + message);
+        return message;
+      }
+    });
+  };
+
+  const handleLoginFB = async () => {
+    window.open(
+      `${BASE_URL}/api/users/facebook`,
+      "mywindow",
+      "location=1,status=1,scrollbars=1, width=800,height=800"
+    );
+    window.addEventListener("message", (message) => {
+      if (message) {
+        setUserSession(message.data.accessToken);
+        history.push("/");
+        console.log(message);
+      } else {
+        console.log("Mess: " + message);
+        return message;
+      }
+    });
   };
   return (
     <main className="d-flex align-items-center min-vh-100 py-3 py-md-0">
@@ -77,17 +113,35 @@ export default function Signin() {
                     className="btn btn-block login-btn mb-4"
                     type="button"
                     value={loading ? "Loading..." : "Login"}
-                    onClick={handleSubmit}
+                    onClick={handleLogin}
                   />
-                  {errorMess && <ErrorMessage message={errorMess} />} 
+                  <div class="d-flex justify-content-between">
+                    <input
+                      name="login"
+                      id="login"
+                      className="btn login-GG-btn mb-4"
+                      type="button"
+                      value={loading ? "Loading..." : "Google +"}
+                      onClick={handleLoginGG}
+                    />
+                    <input
+                      name="login"
+                      id="login"
+                      className="btn login-FB-btn mb-4"
+                      type="button"
+                      value={loading ? "Loading..." : "Facebook"}
+                      onClick={handleLoginFB}
+                    />
+                  </div>
+                  {errorMess && <ErrorMessage message={errorMess} />}
                 </form>
-                <a href="#!" className="forgot-password-link">
+                <Link to='/forgot-password' className="forgot-password-link">
                   Forgot password?
-                </a>
+                </Link>
                 <p className="login-card-footer-text">
-                  Don't have an account?{" "}
-                  <Link to='/signup' className="text-reset">
-                  Register here
+                  Don't have an account?
+                  <Link to="/signup" className="text-reset">
+                    Register here
                   </Link>
                 </p>
                 <nav className="login-card-footer-nav">

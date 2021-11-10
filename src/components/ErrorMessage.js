@@ -22,16 +22,14 @@ const ErrorList = styled.ul`
 export default class ErrorMessage extends Component {
   renderMessageArray = errors => {
     const constraints = errors.map((constraint, idx) => <li key={idx}>{constraint}</li>);
- 
     return <ErrorList>{constraints}</ErrorList>;
   };
  
   render() {
     const { message } = this.props;
- 
     return (
       <ErrorContainer>
-        <ErrorHeading>Oops!</ErrorHeading>
+        <ErrorHeading></ErrorHeading>
         {Array.isArray(message) ? this.renderMessageArray(message) : <p>{message}</p>}
       </ErrorContainer>
     );

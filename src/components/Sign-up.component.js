@@ -4,21 +4,22 @@ import ErrorMessage from "./ErrorMessage";
 import axios from "axios";
 import { useState } from "react";
 import { useHistory } from "react-router";
+import { BASE_URL } from "../Utils/Common";
 
 export default function Signup() {
   const [email, setEmail] = useState();
   const [password, setPassword] = useState();
   const [confirmPassword, setPasswordConfirm] = useState();
-
   const [errorMess, setError] = useState(null);
-
+  const [phoneNumber, setPhoneNumber] = useState();
   let history = useHistory();
 
   const handleSubmit = () => {
     setError(null);
     axios
-      .post(`http://localhost:5000/api/users/signup`, {
+      .post(`${BASE_URL}/api/users/signup`, {
         email,
+        phoneNumber,
         password,
         confirmPassword,
       })
@@ -54,6 +55,20 @@ export default function Signup() {
                       className="form-control"
                       placeholder="Email address"
                       onChange={(e) => setEmail(e.target.value)}
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label htmlFor="email" className="sr-only">
+                      Phone
+                    </label>
+                    <input
+                      type="phone"
+                      name="phone"
+                      id="phone"
+                      className="form-control"
+                      placeholder="Phone number"
+                      defaultValue="+84"
+                      onChange={(e) => setPhoneNumber(e.target.value)}
                     />
                   </div>
                   <div className="form-group mb-4">
@@ -94,7 +109,7 @@ export default function Signup() {
                 </form>
                 <p className="login-card-footer-text">
                   Already have an account?{" "}
-                  <Link to="/" className="text-reset">
+                  <Link to="/signin" className="text-reset">
                     Login here
                   </Link>
                 </p>

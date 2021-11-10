@@ -4,6 +4,8 @@ import { useState } from "react";
 import { BASE_URL, getAccessToken } from "../Utils/Common";
 import queryString from "query-string";
 import { Link, useHistory } from "react-router-dom";
+import SearchDebounce from "./SearchDebounce.component";
+
 
 export default function AuthorCategory() {
   const [authors, setAuthors] = useState();
@@ -74,18 +76,18 @@ export default function AuthorCategory() {
     .then((respone) => setFilter({...filters}))
     .catch((error) => console.log(error));
   }
+  const handleFilterChange = (newFilter) => {
+    console.log(newFilter)
+    setFilter({
+      ...filters,
+      search: newFilter.searchTerm,
+    })
+  }
   return (
     <div className="container">
       <Link to="/">Home</Link>
       <div class="d-flex flex-row-reverse">
-        <input
-          type="text"
-          placeholder="ID/name"
-          style={{ margin: 10 }}
-          onChange={(e) => {
-            setFilter({ search: e.target.value });
-          }}
-        />
+        <SearchDebounce onSubmit={handleFilterChange} placeHolder={"Id/name"}/>
         <h5 style={{ margin: 10 }}>Search: </h5>
       </div>
       <div className="author">

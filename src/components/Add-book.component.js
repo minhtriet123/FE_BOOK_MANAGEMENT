@@ -1,25 +1,54 @@
 import axios from "axios";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useHistory } from "react-router-dom";
 import { BASE_URL, getAccessToken } from "../Utils/Common";
+import AutocomplementBox from "./AutocomplementBox.component";
 import ErrorMessage from "./ErrorMessage";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function AddBook() {
   const [title, setTitle] = useState();
-  const [authorId, setAuthorId] = useState();
-  const [categoryId, setCategoryId] = useState();
-  const [publishYear, setPublishYear] = useState();
+  const [authorId, setAuthorId] = useState("");
+  const [categoryId, setCategoryId] = useState("");
+  const [authorName, setAuthorName] = useState("");
+  const [categoryName, setCategoryName] = useState("");
+  const [publishYear, setPublishYear] = useState("");
   const [price, setPrice] = useState();
   const [description, setDescription] = useState();
   const [cover, setCover] = useState();
   const [errorMess, setError] = useState(null);
+  const [authors, setAuthors] = useState([]);
+  const [categories, setCategories] = useState([]);
 
-  let history = useHistory();
   let config = {
     headers: {
       Authorization: "Bearer " + getAccessToken(),
     },
   };
+  useEffect(() => {
+    axios
+      .get(`${BASE_URL}/api/authors`, config)
+      .then((respone) => {
+        console.log(respone.data);
+        const authors = respone.data;
+        setAuthors(authors);
+      })
+      .catch((err) => console.log(err));
+    axios
+      .get(`${BASE_URL}/api/categories`, config)
+      .then((respone) => {
+        console.log(respone.data);
+        const categories = respone.data;
+        setCategories(categories);
+      })
+      .catch((err) => console.log(err));
+    return () => {
+      setAuthors([]);
+      setCategories([]);
+    };
+  }, []);
+  let history = useHistory();
   const handleSave = () => {
     setError(null);
     const data = {
@@ -34,13 +63,37 @@ export default function AddBook() {
     axios
       .post(`${BASE_URL}/api/books/create-book`, data, config)
       .then((respone) => {
-        history.push("/");
+        notifySuccess();
       })
-      .catch((error) => setError(error.response.data.message));
+      .catch((error) => {
+        setError(error.response.data.message);
+        notifyError();
+      });
   };
+  const notifySuccess = () =>
+    toast.success("Add successfully!", {
+      position: "top-center",
+      autoClose: 1300,
+      hideProgressBar: true,
+      closeOnClick: true,
+      pauseOnHover: false,
+      draggable: true,
+      progress: undefined,
+    });
+  const notifyError = () =>
+    toast.error(" Fail!", {
+      position: "top-center",
+      autoClose: 1300,
+      hideProgressBar: true,
+      closeOnClick: true,
+      pauseOnHover: false,
+      draggable: true,
+      progress: undefined,
+    });
   return (
     <div>
       <div className="container">
+        <ToastContainer />
         <Link to="/">Home</Link>
         <p className="h4"> Add New Book: </p>
         <form>
@@ -52,20 +105,19 @@ export default function AddBook() {
               onChange={(e) => setTitle(e.target.value)}
             />
           </div>
-          <div className="form-group">
-            <label>Author ID</label>
-            <input
-              type="number"
-              className="form-control"
-              onChange={(e) => setAuthorId(e.target.value)}
+          <br></br>
+          <div className="form-group d-flex justify-content-around">
+            <label>Author Name:</label>
+            <AutocomplementBox
+              data={authors}
+              setName={setAuthorName}
+              setId={setAuthorId}
             />
-          </div>
-          <div className="form-group">
-            <label>Category ID</label>
-            <input
-              type="number"
-              className="form-control"
-              onChange={(e) => setCategoryId(e.target.value)}
+            <label>Category Name:</label>
+            <AutocomplementBox
+              data={categories}
+              setName={setCategoryName}
+              setId={setCategoryId}
             />
           </div>
           <div className="form-group">
@@ -105,13 +157,16 @@ export default function AddBook() {
             Reset
           </button>
         </form>
-        <button
-          type="submit"
-          className="badge badge-success"
-          onClick={handleSave}
-        >
-          Add
-        </button>
+        <div>
+          <button
+            type="submit"
+            className="badge badge-success"
+            onClick={handleSave}
+          >
+            Add
+          </button>
+        </div>
+
         {ErrorMessage && <ErrorMessage message={errorMess} />}
       </div>
     </div>

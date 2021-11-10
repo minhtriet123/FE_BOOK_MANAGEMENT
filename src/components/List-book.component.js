@@ -4,6 +4,9 @@ import { Link } from "react-router-dom";
 import { BASE_URL, getAccessToken, removeUserSession } from "../Utils/Common";
 import Pagination from "./Pagination.component";
 import queryString from "query-string";
+import SearchDebounce from "./SearchDebounce.component";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function ListBook() {
   const [books, setBooks] = useState();
@@ -16,7 +19,7 @@ export default function ListBook() {
     totalPages: 2,
   });
 
-  const [filters, setFilter] = useState({
+  const [filters, setFilters] = useState({
     limit: 5,
     page: 1,
     search: "",
@@ -26,10 +29,10 @@ export default function ListBook() {
       Authorization: "Bearer " + getAccessToken(),
     },
   };
-
+  const [showSuc, setShowSuc] = useState(false);
   const handlePageChange = (newPage) => {
     console.log("new page:" + newPage);
-    setFilter({
+    setFilters({
       ...filters,
       page: newPage,
     });
@@ -67,25 +70,56 @@ export default function ListBook() {
   const deleteItem = (id) => {
     axios
       .delete(`${BASE_URL}/api/books/${id}`, config)
-      .then((respone) => fectBooks())
-      .catch((error) => console.log(error));
+      .then((respone) => {
+        fectBooks();
+        notifySuccess();
+      })
+      .catch((error) => {
+        console.log(error);
+        notifyError();
+      });
   };
 
+  const handleFiltersChange = (newFilters) => {
+    console.log(newFilters);
+    setFilters({
+      ...filters,
+      page: 1,
+      search: newFilters.searchTerm,
+    });
+  };
+  const notifySuccess = () =>
+    toast.success("Delete successfully!", {
+      position: "top-center",
+      autoClose: 1300,
+      hideProgressBar: true,
+      closeOnClick: true,
+      pauseOnHover: false,
+      draggable: true,
+      progress: undefined,
+    });
+    const notifyError = () =>
+    toast.error("Delete Fail!", {
+      position: "top-center",
+      autoClose: 1300,
+      hideProgressBar: true,
+      closeOnClick: true,
+      pauseOnHover: false,
+      draggable: true,
+      progress: undefined,
+    });
   return (
     <div className="container">
+      <div>
+        <ToastContainer />
+      </div>
+
       <div className="d-flex justify-content-around p-2 bg-light">
         <nav className="navbar navbar-light ">
-          <form className="form-inline">
-            <input
-              className="form-control mr-sm-2"
-              type="search"
-              placeholder="Search By Title"
-              aria-label="Search"
-              onChange={(e) =>
-                setFilter({ ...filters, search: e.target.value })
-              }
-            />
-          </form>
+          <SearchDebounce
+            onSubmit={handleFiltersChange}
+            placeHolder="Search by title"
+          />
         </nav>
         <nav className="navbar navbar-light flex-row-reverse">
           <form className="form-inline">
@@ -111,6 +145,7 @@ export default function ListBook() {
         </nav>
       </div>
       <br />
+
       <div class="d-flex justify-content-around">
         <Link to="/add-book" className="btn btn-success menu">
           Add book
@@ -140,7 +175,14 @@ export default function ListBook() {
         <div className="col-4">
           <div className="list-group" id="list-tab" role="tablist">
             <ul className="list-group">
-              {!books?"Loading books...":<div></div>}
+              {!books ? (
+                "Loading books..."
+              ) : !books.length ? (
+                "No books was found!"
+              ) : (
+                <div></div>
+              )}
+              {}
               {books &&
                 books.map((book, index) => (
                   <li
@@ -157,6 +199,7 @@ export default function ListBook() {
             </ul>
           </div>
         </div>
+
         <div className="col-8">
           <div className="tab-content" id="nav-tabContent">
             {currentBook ? (
@@ -194,6 +237,7 @@ export default function ListBook() {
                         >
                           Delete
                         </button>
+                       
                       </div>
                     </div>
                   </div>

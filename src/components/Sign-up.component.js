@@ -11,7 +11,7 @@ export default function Signup() {
   const [password, setPassword] = useState();
   const [confirmPassword, setPasswordConfirm] = useState();
   const [errorMess, setError] = useState(null);
-
+  const [phoneNumber, setPhoneNumber] = useState();
   let history = useHistory();
 
   const handleSubmit = () => {
@@ -19,6 +19,7 @@ export default function Signup() {
     axios
       .post(`${BASE_URL}/api/users/signup`, {
         email,
+        phoneNumber,
         password,
         confirmPassword,
       })
@@ -54,6 +55,20 @@ export default function Signup() {
                       className="form-control"
                       placeholder="Email address"
                       onChange={(e) => setEmail(e.target.value)}
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label htmlFor="email" className="sr-only">
+                      Phone
+                    </label>
+                    <input
+                      type="phone"
+                      name="phone"
+                      id="phone"
+                      className="form-control"
+                      placeholder="Phone number"
+                      defaultValue="+84"
+                      onChange={(e) => setPhoneNumber(e.target.value)}
                     />
                   </div>
                   <div className="form-group mb-4">

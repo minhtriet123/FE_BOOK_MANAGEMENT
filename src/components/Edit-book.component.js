@@ -1,13 +1,18 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { useHistory, useParams } from "react-router-dom";
+import { Link, useHistory, useParams } from "react-router-dom";
 import { BASE_URL, getAccessToken } from "../Utils/Common";
 import ErrorMessage from "./ErrorMessage";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import AutocomplementBox from "./AutocomplementBox.component";
 
 export default function EditBook() {
   const [title, setTitle] = useState();
   const [authorId, setAuthorId] = useState();
   const [categoryId, setCategoryId] = useState();
+  const [authorName, setAuthorName] = useState();
+  const [categoryName, setCategoryName] = useState();
   const [publishYear, setPublishYear] = useState();
   const [price, setPrice] = useState();
   const [description, setDescription] = useState();
@@ -19,6 +24,8 @@ export default function EditBook() {
     setTitle(respone.data.title);
     setAuthorId(respone.data.author.id);
     setCategoryId(respone.data.category.id);
+    setAuthorName(respone.data.author.name);
+    setCategoryName(respone.data.category.name);
     setPublishYear(respone.data.publish_year);
     setPrice(respone.data.price);
     setDescription(respone.data.description);
@@ -30,6 +37,7 @@ export default function EditBook() {
       axios
         .get(`${BASE_URL}/api/books/${id}`, config)
         .then((respone) => {
+          console.log(respone);
           setAll(respone);
         })
         .catch((error) => setError(error.response.data.message));
@@ -61,15 +69,39 @@ export default function EditBook() {
       cover,
     };
     axios
-      .patch(`${BASE_URL}/api/books/${id}/edit`, data, config)
+      .put(`${BASE_URL}/api/books/${id}/edit`, data, config)
       .then((respone) => {
-        history.push("/");
+        notifySuccess();
       })
-      .catch((error) => setError(error.response.data.message));
+      .catch((error) => {
+        notifyError();
+        setError(error.response.data.message);
+      });
   };
+  const notifySuccess = () =>
+    toast.success("Update successfully!", {
+      position: "top-center",
+      autoClose: 1300,
+      hideProgressBar: true,
+      closeOnClick: true,
+      pauseOnHover: false,
+      draggable: true,
+      progress: undefined,
+    });
+  const notifyError = () =>
+    toast.error(" Fail!", {
+      position: "top-center",
+      autoClose: 1300,
+      hideProgressBar: true,
+      closeOnClick: true,
+      pauseOnHover: false,
+      draggable: true,
+      progress: undefined,
+    });
   return (
     <div>
       <div className="container">
+        <Link to="/">Home</Link>
         <form>
           <div className="form-group">
             <label>Title</label>
@@ -84,21 +116,21 @@ export default function EditBook() {
             />
           </div>
           <div className="form-group">
-            <label>Author ID</label>
+            <label>Author Name</label>
             <input
               type="text"
               className="form-control"
-              defaultValue={authorId}
-              onChange={(e) => setAuthorId(e.target.value)}
+              defaultValue={authorName}
+              readOnly={true}
             />
           </div>
           <div className="form-group">
-            <label>Category ID</label>
+            <label>Category Name</label>
             <input
               type="text"
               className="form-control"
-              defaultValue={categoryId}
-              onChange={(e) => setCategoryId(e.target.value)}
+              defaultValue={categoryName}
+              readOnly={true}
             />
           </div>
           <div className="form-group">
@@ -155,6 +187,7 @@ export default function EditBook() {
         >
           Save
         </button>
+        <ToastContainer />
         {ErrorMessage && <ErrorMessage message={errorMess} />}
       </div>
     </div>

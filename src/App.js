@@ -8,6 +8,9 @@ import PrivateRoute from "./Utils/PrivateRoute";
 import EditBook from "./components/Edit-book.component";
 import Profile from "./components/Profile.component";
 import AuthorCategory from "./components/Author-Category.component";
+import ResetPassword from "./components/Reset.component";
+import ForgotPassword from "./components/Forgot-password.component";
+import VerificationPhone from "./components/Verification-Phone.component";
 
 function App() {
   return (
@@ -20,6 +23,9 @@ function App() {
         <PrivateRoute path="/books/:id" component={EditBook} />
         <PrivateRoute path="/author-category" component={AuthorCategory} />
         <PrivateRoute path="/profile" component={Profile} />
+        <Route path="/reset/:token" component={ResetPassword} />
+        <Route path="/forgot-password" component={ForgotPassword} />
+        <Route path="/verify-phone" component={VerificationPhone} />
       </Switch>
     </div>
   );

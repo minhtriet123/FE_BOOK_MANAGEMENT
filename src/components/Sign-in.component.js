@@ -33,7 +33,7 @@ export default function Signin() {
         setError(error.response.data.message);
       });
   };
-  
+
   const handleLoginGG = async () => {
     window.open(
       `${BASE_URL}/api/users/google`,
@@ -135,9 +135,9 @@ export default function Signin() {
                   </div>
                   {errorMess && <ErrorMessage message={errorMess} />}
                 </form>
-                <a href="#!" className="forgot-password-link">
+                <Link to='/forgot-password' className="forgot-password-link">
                   Forgot password?
-                </a>
+                </Link>
                 <p className="login-card-footer-text">
                   Don't have an account?
                   <Link to="/signup" className="text-reset">
